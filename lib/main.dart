@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_todolist/models/todo.dart';
+import 'package:flutter_todolist/services/todo_service.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -43,13 +45,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _titleController = TextEditingController();
-  final List<String> items = List<String>.generate(10000, (i) => 'Item $i');
+  final todoService = TodoService();
+  final _todoController = TextEditingController();
+  final List<String> items = List<String>.generate(100, (i) => 'Item $i');
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    _titleController.dispose();
+    _todoController.dispose();
     super.dispose();
   }
 
@@ -64,34 +67,55 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-          itemCount: items.length,
-          prototypeItem: ListTile(
-            title: Text(items.first),
-          ),
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(items[index]),
-            );
-          },
-        ),
+            child: StreamBuilder<List<Todo>>(
+              stream: todoService.getTodos(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+
+                if (snapshot.hasData) {
+                  final todos = snapshot.data!;
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: todos.length,
+                    itemBuilder: (context, index) {
+                      return CheckboxListTile(
+                        title: Text(todos[index].title),
+                        value: todos[index].completed,
+                        onChanged: (newValue) => todoService.updateTodo(todos[index].id, newValue!),
+                      );
+                    },
+                  );
+                }
+
+                return const CircularProgressIndicator();
+              },
+            ),
           ),
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.lightBlue[100],
+              color: Theme.of(context).colorScheme.inversePrimary,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(24))
             ),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _titleController,
+                    controller: _todoController,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+                    ),
                   ),
                 ),
-                const IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: null,
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  color: Theme.of(context).colorScheme.primary,
+                  onPressed: () {
+                    todoService.addTodo(_todoController.text);
+                    _todoController.text = '';
+                  },
                 )
               ],
             ),
