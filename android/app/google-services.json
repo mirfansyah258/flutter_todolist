@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "329296443341",
+    "firebase_url": "https://todolist-6aff6-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "todolist-6aff6",
+    "storage_bucket": "todolist-6aff6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:329296443341:android:7a91dc7087771fff983684",
+        "android_client_info": {
+          "package_name": "com.mirfnsyh.flutter_todolist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChnuKJg4k1Jnn5kvkOG2FZ69qwbLRkn_0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
